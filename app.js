@@ -7,9 +7,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = (process.env.CORS || "http://localhost:3000,http://localhost:5173,http://localhost:8000,https://stay-lms.netlify.app/").split(",");
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: process.env.CORS,
   credentials: true
 }));
 
