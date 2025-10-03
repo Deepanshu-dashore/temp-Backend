@@ -1,0 +1,25 @@
+//  hotel intizlti create json object 
+
+{
+  "hotelName": "Ocean View Palace",
+  "email": "contact@oceanviewpalace.com",
+  "hotelNumber": "+91-9988776655",
+  "address": "456 Marine Drive",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "GSTNumber": "27ABCDE1234F1Z6",
+  "hotelUsername": "oceanview_palace",
+  "hotelPassword": "StrongPass@2025"
+}
+
+--------------------------------------------------------
+
+//login hotel json obejct 
+
+{
+  "hotelUsername": "oceanview_palace",
+  "hotelPassword": "StrongPass@2025"
+}
+
+--------------------------------------------------------
+

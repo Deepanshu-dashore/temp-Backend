@@ -1,0 +1,363 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "StayNow API",
+    "version": "1.0.0",
+    "description": "API documentation for StayNow hotel management system",
+    "contact": {
+      "name": "StayNow Team",
+      "email": "support@staynow.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hotel": {
+      "get": {
+        "summary": "Get hotel profile",
+        "description": "Get the authenticated hotel's profile information",
+        "tags": ["Hotels"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Hotel profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {"type": "number"},
+                    "data": {"type": "object"},
+                    "message": {"type": "string"},
+                    "success": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing token"
+          },
+          "400": {
+            "description": "Hotel not found"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new hotel",
+        "description": "Register a new hotel in the system",
+        "tags": ["Hotels"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["hotelName", "email", "hotelNumber", "address", "city", "state", "GSTNumber", "hotelUsername", "hotelPassword"],
+                "properties": {
+                  "hotelName": {"type": "string", "description": "Name of the hotel"},
+                  "email": {"type": "string", "format": "email", "description": "Hotel email address"},
+                  "hotelNumber": {"type": "string", "description": "Hotel contact number"},
+                  "address": {"type": "string", "description": "Hotel address"},
+                  "city": {"type": "string", "description": "City where hotel is located"},
+                  "state": {"type": "string", "description": "State where hotel is located"},
+                  "GSTNumber": {"type": "string", "description": "GST registration number"},
+                  "hotelUsername": {"type": "string", "description": "Unique username for hotel login"},
+                  "hotelPassword": {"type": "string", "description": "Password for hotel login"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Hotel created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {"type": "number"},
+                    "data": {"type": "object"},
+                    "message": {"type": "string"},
+                    "success": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Hotel already exists or validation error"
+          }
+        }
+      }
+    },
+    "/hotel/login": {
+      "post": {
+        "summary": "Hotel login",
+        "description": "Authenticate hotel and get access token",
+        "tags": ["Hotels"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["hotelUsername", "hotelPassword"],
+                "properties": {
+                  "hotelUsername": {"type": "string", "description": "Hotel username"},
+                  "hotelPassword": {"type": "string", "description": "Hotel password"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hotel logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {"type": "number"},
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "hotel": {"type": "object"},
+                        "token": {"type": "string", "description": "JWT access token"}
+                      }
+                    },
+                    "message": {"type": "string"},
+                    "success": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials or hotel not found"
+          }
+        }
+      }
+    },
+    "/hotel/all": {
+      "get": {
+        "summary": "Get all hotels",
+        "description": "Retrieve list of all hotels (requires authentication)",
+        "tags": ["Hotels"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "All hotels retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {"type": "number"},
+                    "data": {
+                      "type": "array",
+                      "items": {"type": "object"}
+                    },
+                    "message": {"type": "string"},
+                    "success": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing token"
+          },
+          "400": {
+            "description": "No hotels found"
+          }
+        }
+      }
+    },
+    "/hotel/update-profile": {
+      "patch": {
+        "summary": "Update hotel profile",
+        "description": "Update hotel profile information (requires authentication). Updatable fields: hotelName, email, hotelNumber, address, city, state, GSTNumber, hotelUsername, description, contactPersonName, contactPersonEmail, contactPersonNumber, pinCode, googleMapLink, openingTime, closingTime, facilities, PANNumber, ifscCode, bankName, bankAccountNumber, bankAccountHolderName",
+        "tags": ["Hotels"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Updatable fields: hotelName, email, hotelNumber, address, city, state, GSTNumber, hotelUsername, description, contactPersonName, contactPersonEmail, contactPersonNumber, pinCode, googleMapLink, openingTime, closingTime, facilities, PANNumber, ifscCode, bankName, bankAccountNumber, bankAccountHolderName",
+                "properties": {
+                  "hotelName": {"type": "string", "description": "Name of the hotel"},
+                  "email": {"type": "string", "format": "email", "description": "Hotel email address"},
+                  "hotelNumber": {"type": "string", "description": "Hotel contact number"},
+                  "address": {"type": "string", "description": "Hotel address"},
+                  "city": {"type": "string", "description": "City where hotel is located"},
+                  "state": {"type": "string", "description": "State where hotel is located"},
+                  "GSTNumber": {"type": "string", "description": "GST registration number"},
+                  "hotelUsername": {"type": "string", "description": "Unique username for hotel login"},
+                  "description": {"type": "string", "description": "Hotel description"},
+                  "contactPersonName": {"type": "string", "description": "Contact person name"},
+                  "contactPersonEmail": {"type": "string", "format": "email", "description": "Contact person email"},
+                  "contactPersonNumber": {"type": "string", "description": "Contact person number"},
+                  "pinCode": {"type": "string", "description": "Postal code"},
+                  "googleMapLink": {"type": "string", "description": "Google Maps link"},
+                  "openingTime": {"type": "string", "description": "Hotel opening time"},
+                  "closingTime": {"type": "string", "description": "Hotel closing time"},
+                  "facilities": {"type": "array", "items": {"type": "string"}, "description": "List of hotel facilities"},
+                  "PANNumber": {"type": "string", "description": "PAN number"},
+                  "ifscCode": {"type": "string", "description": "IFSC code"},
+                  "bankName": {"type": "string", "description": "Bank name"},
+                  "bankAccountNumber": {"type": "string", "description": "Bank account number"},
+                  "bankAccountHolderName": {"type": "string", "description": "Bank account holder name"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hotel updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {"type": "number"},
+                    "data": {"type": "object"},
+                    "message": {"type": "string"},
+                    "success": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing token"
+          },
+          "400": {
+            "description": "Hotel not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter JWT token"
+      }
+    },
+    "/hotel-assest": {
+      "post": {
+        "summary": "Upload hotel assets (logo & banner)",
+        "description": "Upload hotel logo and banner images (requires authentication). Accepts multipart/form-data with hotelLogo and/or hotelBanner files.",
+        "tags": ["Hotels"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hotelLogo": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Hotel logo image file (optional)"
+                  },
+                  "hotelBanner": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Hotel banner image file (optional)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assets uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {"type": "number"},
+                    "data": {"type": "object"},
+                    "message": {"type": "string"},
+                    "success": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Hotel not found or invalid file format"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing token"
+          }
+        }
+      }
+    }
+
+  }
+}
